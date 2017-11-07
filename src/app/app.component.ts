@@ -1,59 +1,64 @@
-import { Component, NgZone, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import * as firebase from 'firebase'
-
 
 @Component({
     selector   : 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls  : ['./app.component.css']
+    templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
-    currentUser: firebase.UserInfo
-    feeds: any
+export class AppComponent {
+    last: firebase.firestore.DocumentSnapshot[] = []
+    startAt
+    endAt
+    limit = 3
+    initial = true
+    feeds = []
 
-    constructor(private zone: NgZone) { }
+    getNextFeeds() {
+        let query: firebase.firestore.Query
 
-    ngOnInit(): void {
-        this.getFeeds()
-        this.getAuthState()
+        if (this.initial) {
+            this.initial = false
+            query = firebase.firestore().collection('feeds').orderBy('created_at').limit(3)
+        } else {
+            query = firebase.firestore().collection('feeds').orderBy('created_at').startAfter(this.last[this.last.length - 1]).limit(3)
+        }
+
+        query.get().then(snap => {
+            if (snap.empty) {console.log('No More Feeds'); return}
+
+            snap.docs.forEach((feed, i) => {
+                const data = feed.data()
+                data.id    = feed.id
+                this.feeds.push(data)
+
+                this.last.push(feed)
+                this.endAt = feed
+                if (i === 0) this.startAt = feed
+            })
+
+            this.onFeedsChanges()
+
+        })
     }
 
-    getAuthState() {
-        firebase.auth().onAuthStateChanged(
-            (user) => {
-                this.currentUser = user
-                if ( this.currentUser )
-                    console.log('onAuthStateChanged: LoggedIn', this.currentUser)
-                else
-                    console.log('onAuthStateChanged: LoggedOut')
-            },
-            (error) => {
-                console.log('Error in onAuthStateChanged:', error)
-            }
-        )
-    }
-
-    logOut() {
-        firebase.auth().signOut()
-        console.log('Logged Out:')
-    }
-
-    logIn() {
-        firebase.auth().signInWithEmailAndPassword('qwerty@mail.ru', '123456').then(
-            (user: firebase.UserInfo) => {
-                console.log('Success in logIn:', user.displayName)
-            },
-            (error) => {
-                console.log('Error in logIn:', error)
-            }
-        )
-    }
-
-    getFeeds() {
-        firebase.database().ref('feeds').limitToFirst(3).on('value', (snap) => {
-            this.feeds = snap.toJSON()
-            console.log(this.feeds)
-            this.zone.run(() => {})
+    onFeedsChanges() {
+        firebase.firestore().collection('feeds').orderBy('created_at').startAt(this.startAt).endAt(this.endAt).onSnapshot(querySnapshot => {
+            querySnapshot.docChanges.forEach(change => {
+                this.feeds.forEach((feed, i) => {
+                    if (feed.id === change.doc.id) {
+                        if (change.type === 'modified') {
+                            const data = change.doc.data()
+                            data.id    = change.doc.id
+                            this.feeds[i] = data
+                        }
+                        if (change.type === 'removed') {
+                            this.feeds.splice(i, 1)
+                            this.last.splice(i, 1)
+                            console.log('Last feedId:', this.last[this.last.length - 1].id)
+                        }
+                    }
+                })
+            })
         })
     }
 }
