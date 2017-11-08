@@ -3,7 +3,7 @@ import * as firebase from 'firebase'
 
 @Component({
     selector: 'app-feed-detail',
-    templateUrl: './feed-detail.component.html'
+    templateUrl: './detail.html'
 })
 export class FeedDetailComponent {
     @Input() feed
@@ -21,7 +21,7 @@ export class FeedDetailComponent {
         this.feedRef.delete().then(
             success => {
                 console.log('Success: deleteFeed()')
-            }, 
+            },
             error => {
                 console.log('Error: deleteFeed()')
             }
