@@ -11,7 +11,6 @@ export class FeedsListComponent {
     startAt
     endAt
     limit = environment.settings.feedsLimit
-    initial = true
     feeds = []
     feedsRef = firebase.firestore().collection('feeds')
     query: firebase.firestore.Query
@@ -21,12 +20,7 @@ export class FeedsListComponent {
     }
 
     getNextFeeds() {
-        if (this.initial) {
-            this.initial = false
-            this.query = this.feedsRef.orderBy('created_at').limit(this.limit)
-        } else {
-            this.query = this.feedsRef.orderBy('created_at').startAfter(this.lastFeed).limit(this.limit)
-        }
+        this.setQuery()
 
         this.query.get().then(snap => {
             if (snap.empty) {console.log('No More Feeds'); return}
@@ -91,4 +85,10 @@ export class FeedsListComponent {
         return this.feedsSnapshots[this.feedsSnapshots.length - 1]
     }
 
+    setQuery() {
+        if (this.feeds.length === 0)
+            this.query = this.feedsRef.orderBy('created_at').limit(this.limit)
+        else
+            this.query = this.feedsRef.orderBy('created_at').startAfter(this.lastFeed).limit(this.limit)
+    }
 }
