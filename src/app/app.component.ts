@@ -12,15 +12,17 @@ export class AppComponent {
     limit = 3
     initial = true
     feeds = []
+    feedsRef = firebase.firestore().collection('feeds')
+    feedsRefOrdered = this.feedsRef.orderBy('created_at')
 
     getNextFeeds() {
         let query: firebase.firestore.Query
 
         if (this.initial) {
             this.initial = false
-            query = firebase.firestore().collection('feeds').orderBy('created_at').limit(3)
+            query = this.feedsRefOrdered.limit(3)
         } else {
-            query = firebase.firestore().collection('feeds').orderBy('created_at').startAfter(this.last[this.last.length - 1]).limit(3)
+            query = this.feedsRefOrdered.startAfter(this.last[this.last.length - 1]).limit(3)
         }
 
         query.get().then(snap => {
@@ -42,7 +44,7 @@ export class AppComponent {
     }
 
     onFeedsChanges() {
-        firebase.firestore().collection('feeds').orderBy('created_at').startAt(this.startAt).endAt(this.endAt).onSnapshot(querySnapshot => {
+        this.feedsRefOrdered.startAt(this.startAt).endAt(this.endAt).onSnapshot(querySnapshot => {
             querySnapshot.docChanges.forEach(change => {
                 this.feeds.forEach((feed, i) => {
                     if (feed.id === change.doc.id) {
