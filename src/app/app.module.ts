@@ -24,10 +24,10 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll'
 import { CommentComponent } from './components/comment/comment.component'
 import { FeedCreateComponent } from './components/feed-create/feed-create.component'
 import { CommentCreateComponent } from './components/comment-create/comment-create.component'
-import { FeedsListComponent }       from './components/feeds-list/feeds-list.component'
-import { FeedDetailComponent }      from './components/feeds-list/feed-detail/feed-detail.component'
-import { FeedDeleteComponent }      from './components/feeds-list/feed-detail/feed-delete/feed-delete.component'
-import { FeedUpdateLikesComponent } from './components/feeds-list/feed-detail/feed-update-likes/feed-update-likes.component'
+import {
+    FeedComponent, FeedsListComponent, FeedDetailComponent, FeedDeleteComponent,
+    FeedUpdateLikesComponent, FeedService
+} from './components/feed'
 
 // initializeApp(environment.firebase);
 
@@ -35,14 +35,15 @@ import { FeedUpdateLikesComponent } from './components/feeds-list/feed-detail/fe
     declarations: [
         AppComponent,
         AuthComponent,
+        FeedComponent,
         FeedsListComponent,
+        FeedDetailComponent,
+        FeedDeleteComponent,
+        FeedUpdateLikesComponent,
         ToolbarComponent,
         CommentComponent,
         FeedCreateComponent,
-        CommentCreateComponent,
-        FeedDetailComponent,
-        FeedDeleteComponent,
-        FeedUpdateLikesComponent
+        CommentCreateComponent
     ],
     imports: [
         BrowserModule,
@@ -63,7 +64,7 @@ import { FeedUpdateLikesComponent } from './components/feeds-list/feed-detail/fe
         InfiniteScrollModule,
         MdProgressSpinnerModule
     ],
-    providers: [AuthService],
+    providers: [AuthService, FeedService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
