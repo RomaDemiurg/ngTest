@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+    margin: 0;
+    background-color: #FFFFFF;
+}
+
+.comment-content {
+    white-space: normal;
+  }
+
+.mat-list .mat-list-item .mat-list-item-content, .mat-nav-list .mat-list-item .mat-list-item-content, .mat-selection-list .mat-list-item .mat-list-item-content {
+-webkit-box-align: start;
+    -ms-flex-align: start;
+        align-items: start;
+height: 300px;
+padding: 10px 16px;
+}
