@@ -35,12 +35,12 @@
 </div> -->
 
 <div class="example-panel">
-    
+
     <!-- <pre>{{ feedsIds | json }}</pre> -->
 
-    <button  (click)="getNextFeeds()">More Feeds...</button>
+    <button  (click)="feedService.getNextFeeds()">More Feeds...</button>
 
-    <div *ngFor="let feed of feeds" >
+    <div *ngFor="let feed of feedService.feeds" >
         <app-feed-detail [feed]="feed"></app-feed-detail>
     </div>
 
