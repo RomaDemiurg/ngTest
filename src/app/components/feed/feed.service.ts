@@ -4,11 +4,11 @@ import { environment } from '../../../environments/environment'
 
 @Injectable()
 export class FeedService {
+    public  feeds = []
     private feedsSnapshots: firebase.firestore.DocumentSnapshot[] = []
     private startAt
     private endAt
     private limit = environment.settings.feedsLimit
-    public  feeds = []
     private feedsRef = firebase.firestore().collection('feeds')
     private query: firebase.firestore.Query
 
@@ -32,6 +32,23 @@ export class FeedService {
         })
     }
 
+    deleteFeed(feedId) {
+        const feedRef = this.feedsRef.doc(feedId)
+
+        feedRef.delete().then(
+            success => console.log('Success: deleteFeed()'),
+            error => console.log('Error: deleteFeed()')
+        )
+    }
+
+    updateLikes(feed) {
+        const feedRef = this.feedsRef.doc(feed.id)
+
+        feedRef.update({likes: feed.likes + 1})
+            .then(success => console.log('Success: updateLikes()'))
+            .catch(error => console.log('Error: updateLikes()'))
+    }
+
     private onFeedsChanges() {
         this.query = this.feedsRef.orderBy('created_at').startAt(this.startAt).endAt(this.endAt)
 
@@ -53,23 +70,6 @@ export class FeedService {
                 })
             })
         })
-    }
-
-    deleteFeed(feedId) {
-        const feedRef = this.feedsRef.doc(feedId)
-
-        feedRef.delete().then(
-            success => console.log('Success: deleteFeed()'),
-            error => console.log('Error: deleteFeed()')
-        )
-    }
-
-    updateLikes(feed) {
-        const feedRef = this.feedsRef.doc(feed.id)
-
-        feedRef.update({likes: feed.likes + 1})
-            .then(success => console.log('Success: updateLikes()'))
-            .catch(error => console.log('Error: updateLikes()'))
     }
 
     private get lastFeed(): firebase.firestore.DocumentSnapshot {
