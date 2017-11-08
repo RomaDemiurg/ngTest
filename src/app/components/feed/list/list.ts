@@ -9,7 +9,7 @@ import * as firebase from 'firebase';
 
 @Component({
     selector: 'app-feeds-list',
-    templateUrl: './feeds-list.component.html'
+    templateUrl: './list.html'
 })
 export class FeedsListComponent {
     // @Input() feeds
@@ -46,7 +46,7 @@ export class FeedsListComponent {
 
         /* this.lastFeed$ = new BehaviorSubject(null)
 
-        this.lastFeed$.switchMap((lastFeed) => 
+        this.lastFeed$.switchMap((lastFeed) =>
             afs.collection('feeds', ref => {
                 let query: firebase.firestore.CollectionReference | firebase.firestore.Query = ref
                 if (lastFeed) { query = query.orderBy('created_at').startAfter(lastFeed).limit(3) }
@@ -98,12 +98,12 @@ export class FeedsListComponent {
             this.afs.collection('feeds', ref => ref.orderBy('created_at').limit(3)).snapshotChanges().subscribe(snap => {
                 const feeds = []
                 let doc
-    
+
                 snap.forEach(feed => {
                     feeds.push(feed.payload.doc.data())
                     doc = feed.payload.doc
                 })
-    
+
                 this.feeds[idx] = feeds
                 this.last = doc
                 this.initial = false
@@ -115,18 +115,18 @@ export class FeedsListComponent {
             this.afs.collection('feeds', ref => ref.orderBy('created_at').startAfter(this.last).limit(3)).snapshotChanges().subscribe(snap => {
                 const feeds = []
                 let doc
-    
+
                 snap.forEach(feed => {
                     feeds.push(feed.payload.doc.data())
                     doc = feed.payload.doc
                 })
-    
+
                 this.feeds[idx] = feeds
                 this.last = doc
                 console.log(this.feeds)
             })
         } */
-        
+
         // console.log(this.feeds$[0].subscribe())
         // this.feeds$[0].subscribe()
         /* .subscribe(feeds => {
@@ -226,7 +226,7 @@ export class FeedsListComponent {
         feedRef.delete().then(
             success => {
                 console.log('Success: deleteFeed()')
-            }, 
+            },
             error => {
                 console.log('Error: deleteFeed()')
             }

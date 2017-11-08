@@ -3,7 +3,7 @@ import * as firebase from 'firebase'
 
 @Component({
   selector: 'app-feed-update-likes',
-  templateUrl: './feed-update-likes.component.html'
+  templateUrl: './update-likes.html'
 })
 export class FeedUpdateLikesComponent {
     @Input() feed
