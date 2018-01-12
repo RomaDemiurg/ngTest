@@ -8,5 +8,5 @@ import { FeedService } from '../feed.service'
 export class FeedUpdateLikesComponent {
     @Input() feed
 
-    constructor(protected feedService: FeedService) { }
+    constructor(public feedService: FeedService) { }
 }

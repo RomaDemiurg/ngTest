@@ -7,7 +7,7 @@ import { FeedService } from '../feed.service'
 })
 export class FeedsListComponent {
 
-    constructor(protected feedService: FeedService) {
+    constructor(public feedService: FeedService) {
         this.feedService.getNextFeeds()
     }
 
