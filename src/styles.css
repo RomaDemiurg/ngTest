@@ -1,1 +1,102 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+body {
+    margin: 0;
+    background-color: #FFFFFF;
+}
+
+.comment-content {
+    white-space: normal;
+}
+
+.example-icon {
+    padding: 0 14px;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.example-card {
+    margin: 0 auto;
+    max-width: 350px;
+    min-width: 200px;
+    /* background-color: red; */
+}
+
+.example-panel {
+    margin: 0 auto;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+.example-header-image {
+    background-image: url('./assets/shiba1.jpg');
+    background-size: cover;
+}
+
+.actions {
+    margin-top: 13px;
+    margin-right: 10px;
+}
+
+/*.actions-first {
+    margin-right: 10px;
+}*/
+
+.actions:last-child {
+    margin-right: 0;
+}
+
+.card-actions-align {
+    align-items: center;
+}
+
+/*.nav-list-margins {
+    margin-left: -24px;
+    margin-right: -26px;
+}*/
+
+/*.panel-title-margin {
+    margin-left: -9px;
+}*/
+
+.comment {
+    align-items: start;
+    height: auto;
+    padding: 10px 16px;
+}
+
+/* .mat-list.mat-list-item.mat-list-item-content, .mat-nav-list.mat-list-item.hi.mat-list-item-content, .mat-selection-list.mat-list-item.mat-list-item-content {
+align-items: start;
+height: auto;
+padding: 10px 16px;
+} */
+
+.mat-list .mat-list-item .mat-line,.mat-nav-list .mat-list-item .mat-line,.mat-selection-list .mat-list-item .mat-line {
+    white-space:normal;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:block;
+    box-sizing:border-box
+}
+
+.mat-list .mat-list-item.mat-2-line .mat-list-item-content,.mat-nav-list .mat-list-item.mat-2-line .mat-list-item-content,.mat-selection-list .mat-list-item.mat-2-line .mat-list-item-content {
+    height:auto !important;
+}
+
+.mat-list .mat-list-item .mat-list-item-content,.mat-nav-list .mat-list-item .mat-list-item-content,.mat-selection-list .mat-list-item .mat-list-item-content {
+    display:flex;
+    flex-direction:row;
+    align-items:start !important;
+    box-sizing:border-box;
+    height:auto !important;
+    padding: 10px 0 10px 24px !important;
+    position:relative
+}
+
+.mat-expansion-panel-body {
+    padding: 0 !important;
+}
