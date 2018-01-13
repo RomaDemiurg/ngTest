@@ -10,11 +10,8 @@ export class FeedService {
     private endAt
     private limit = environment.settings.feedsLimit
     private feedsRef = firebase.firestore().collection('feeds')
-    private query: firebase.firestore.Query
 
     getNextFeeds() {
-        this.setQuery()
-
         this.query.get().then(snap => {
             if (snap.empty) {console.log('No More Feeds'); return}
 
@@ -50,9 +47,9 @@ export class FeedService {
     }
 
     private onFeedsChanges() {
-        this.query = this.feedsRef.orderBy('created_at').startAt(this.startAt).endAt(this.endAt)
+        const query = this.feedsRef.orderBy('created_at').startAt(this.startAt).endAt(this.endAt)
 
-        this.query.onSnapshot(querySnapshot => {
+        query.onSnapshot(querySnapshot => {
             querySnapshot.docChanges.forEach(change => {
                 this.feeds.forEach((feed, i) => {
                     if (feed.id === change.doc.id) {
@@ -76,10 +73,10 @@ export class FeedService {
         return this.feedsSnapshots[this.feedsSnapshots.length - 1]
     }
 
-    private setQuery() {
+    private get query(): firebase.firestore.Query {
         if (this.feeds.length === 0)
-            this.query = this.feedsRef.orderBy('created_at').limit(this.limit)
+            return this.feedsRef.orderBy('created_at').limit(this.limit)
         else
-            this.query = this.feedsRef.orderBy('created_at').startAfter(this.lastFeed).limit(this.limit)
+            return this.feedsRef.orderBy('created_at').startAfter(this.lastFeed).limit(this.limit)
     }
 }
