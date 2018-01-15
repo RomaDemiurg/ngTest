@@ -2,3 +2,7 @@
 
 <app-feed-update-likes [feed]="feed"></app-feed-update-likes>
 <app-feed-delete [feedId]="feed.id"></app-feed-delete>
+
+<span *ngFor="let c of feed.comments">
+    {{ c.text }}
+</span>
