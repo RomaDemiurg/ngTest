@@ -84,20 +84,18 @@ export class FeedService {
 
         query.onSnapshot(querySnapshot => {
             querySnapshot.docChanges.forEach(change => {
-                this.feeds.forEach((feed, i) => {
-                    if (feed.id === change.doc.id) {
-                        if (change.type === 'modified') {
-                            const data = change.doc.data()
-                            data.id    = change.doc.id
-                            this.feeds[i] = data
-                        }
-                        if (change.type === 'removed') {
-                            this.feeds.splice(i, 1)
-                            this.feedsSnapshots.splice(i, 1)
-                            console.log('Last feedId:', this.lastFeed.id)
-                        }
-                    }
-                })
+                const idx = this.findFeedIndexByFeedId(change.doc.id)
+
+                if (change.type === 'modified') {
+                    const data = change.doc.data()
+                    data.id    = change.doc.id
+                    this.feeds[idx] = data
+                }
+                if (change.type === 'removed') {
+                    this.feeds.splice(idx, 1)
+                    this.feedsSnapshots.splice(idx, 1)
+                    console.log('Last feedId:', this.lastFeed.id)
+                }
             })
         })
     }
