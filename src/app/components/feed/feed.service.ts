@@ -40,35 +40,25 @@ export class FeedService {
         })
     }
 
-    getNextCommentsByFeedId(feedId) {
-        let query: firebase.firestore.Query
+    getNextCommentsByFeedId(feedId: string) {
+        this.commentsQuery(feedId).get().then(snap => {
+            if (snap.empty) {console.log('No More Comments'); return}
 
-        this.feeds.forEach((feed, idx) => {
-            if (feed.id === feedId) {
-                if (this.feeds[idx]['comments'].length === 0)
-                    query = this.feedsRef.doc(feedId).collection('comments').orderBy('created_at').limit(this.limit)
-                else
-                    query = this.feedsRef.doc(feedId).collection('comments').orderBy('created_at').startAfter(this.lastCommentByFeedId(feedId)).limit(this.limit)
+            snap.docs.forEach((comment, i) => {
+                const data = comment.data()
+                data.id    = comment.id
+                const idx = this.findFeedIndexByFeedId(feedId)
+                this.feeds[idx]['comments'].push(data)
 
-                query.get().then(snap => {
-                    if (snap.empty) {console.log('No More Comments'); return}
+                this.commentsSnapshots[feedId].push(comment)
+                console.log(this.commentsSnapshots)
+                console.log(this.lastCommentByFeedId(feedId))
 
-                    snap.docs.forEach((comment, i) => {
-                        const data = comment.data()
-                        data.id    = comment.id
-                        this.feeds[idx]['comments'].push(data)
+                this.commentEndAt = comment
+                if (i === 0) this.commentStartAt = comment
+            })
 
-                        this.commentsSnapshots[feedId].push(comment)
-                        console.log(this.commentsSnapshots)
-                        console.log(this.lastCommentByFeedId(feedId))
-
-                        this.commentEndAt = comment
-                        if (i === 0) this.commentStartAt = comment
-                    })
-
-                    this.onCommentsChanges()
-                })
-            }
+            this.onCommentsChanges()
         })
     }
 
@@ -130,5 +120,23 @@ export class FeedService {
             return this.feedsRef.orderBy('created_at').limit(this.limit)
         else
             return this.feedsRef.orderBy('created_at').startAfter(this.lastFeed).limit(this.limit)
+    }
+
+    private commentsQuery(feedId: string): firebase.firestore.Query {
+        let query: firebase.firestore.Query
+        query = this.feedsRef.doc(feedId).collection('comments').orderBy('created_at')
+
+        const idx = this.findFeedIndexByFeedId(feedId)
+
+        if (this.feeds[idx]['comments'].length === 0)
+            query.limit(this.limit)
+        else
+            query.startAfter(this.lastCommentByFeedId(feedId)).limit(this.limit)
+
+        return query
+    }
+
+    private findFeedIndexByFeedId(feedId: string): number {
+        return this.feeds.findIndex(feed => feed.id === feedId)
     }
 }
