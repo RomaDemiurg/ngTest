@@ -13,8 +13,8 @@ export class FeedService {
     private commentsSnapshots: CommentsSnapshots = {}
     private startAt
     private endAt
-    private commentEndAt
-    private commentStartAt
+    private commentEndAt: firebase.firestore.DocumentSnapshot
+    private commentStartAt: firebase.firestore.DocumentSnapshot
     private limit = environment.settings.feedsLimit
     private feedsRef = firebase.firestore().collection('feeds')
 
@@ -58,7 +58,7 @@ export class FeedService {
                 if (i === 0) this.commentStartAt = comment
             })
 
-            this.onCommentsChanges()
+            this.onCommentsChanges(feedId)
         })
     }
 
@@ -102,8 +102,28 @@ export class FeedService {
         })
     }
 
-    private onCommentsChanges() {
+    private onCommentsChanges(feedId: string) {
+        let query: firebase.firestore.Query
+        query = this.feedsRef.doc(feedId).collection('comments').orderBy('created_at').startAt(this.commentStartAt).endAt(this.commentEndAt)
 
+        query.onSnapshot(querySnapshot => {
+            querySnapshot.docChanges.forEach(change => {
+                const feedIdx = this.findFeedIndexByFeedId(feedId)
+                const commentIdx = this.findCommentIndex(feedIdx, change.doc.id)
+                
+                if (change.type === 'modified') {
+                    const data = change.doc.data()
+                    data.id    = change.doc.id
+                    this.feeds[feedIdx]['comments'][commentIdx] = data
+                }
+                if (change.type === 'removed') {
+                    this.feeds[feedIdx]['comments'].splice(commentIdx, 1)
+                    this.commentsSnapshots[feedId].splice(commentIdx, 1)
+                    console.log('comment removed - commentsSnapshots:', this.commentsSnapshots)
+                    console.log('Last commentId:', this.lastCommentByFeedId(feedId).id)
+                }
+            })
+        })
     }
 
     private get lastFeed(): firebase.firestore.DocumentSnapshot {
@@ -138,5 +158,9 @@ export class FeedService {
 
     private findFeedIndexByFeedId(feedId: string): number {
         return this.feeds.findIndex(feed => feed.feed.id === feedId)
+    }
+
+    private findCommentIndex(feedIdx: number, commentId: string): number {
+        return this.feeds[feedIdx]['comments'].findIndex(comment => comment.id === commentId)
     }
 }
