@@ -10,7 +10,7 @@ interface CommentsSnapshots {
 export class FeedService {
     public  feeds = []
     private feedsSnapshots: firebase.firestore.DocumentSnapshot[] = []
-    private commentsSnapshots = []
+    private commentsSnapshots: CommentsSnapshots = {}
     private startAt
     private endAt
     private commentEndAt
@@ -19,21 +19,20 @@ export class FeedService {
     private feedsRef = firebase.firestore().collection('feeds')
 
     getNextFeeds() {
-        this.query.get().then(snap => {
-            if (snap.empty) {console.log('No More Feeds'); return}
+        this.query.get().then(querySnap => {
+            if (querySnap.empty) {console.log('No More Feeds'); return}
 
-            snap.docs.forEach((feed, i) => {
-                const data = feed.data()
-                data.id    = feed.id
-                data.comments = []
-                this.feeds.push(data)
+            querySnap.docs.forEach((feedSnap, i) => {
+                const feed = feedSnap.data()
+                feed.id    = feedSnap.id
+                this.feeds.push({feed: feed, comments: []})
 
-                this.feedsSnapshots.push(feed)
-                this.commentsSnapshots[feed.id] = []
-                this.endAt = feed
-                if (i === 0) this.startAt = feed
+                this.feedsSnapshots.push(feedSnap)
+                this.commentsSnapshots[feedSnap.id] = []
+                this.endAt = feedSnap
+                if (i === 0) this.startAt = feedSnap
 
-                this.getNextCommentsByFeedId(feed.id)
+                this.getNextCommentsByFeedId(feedSnap.id)
             })
 
             this.onFeedsChanges()
@@ -42,6 +41,7 @@ export class FeedService {
 
     getNextCommentsByFeedId(feedId: string) {
         this.commentsQuery(feedId).get().then(snap => {
+            console.log('getNextCommentsByFeedId() invoked - commentsSnapshots:', this.commentsSnapshots)
             if (snap.empty) {console.log('No More Comments'); return}
 
             snap.docs.forEach((comment, i) => {
@@ -51,8 +51,8 @@ export class FeedService {
                 this.feeds[idx]['comments'].push(data)
 
                 this.commentsSnapshots[feedId].push(comment)
-                console.log(this.commentsSnapshots)
-                console.log(this.lastCommentByFeedId(feedId))
+                console.log('commentsSnapshots:', this.commentsSnapshots)
+                console.log('lastCommentByFeedId:', this.lastCommentByFeedId(feedId))
 
                 this.commentEndAt = comment
                 if (i === 0) this.commentStartAt = comment
@@ -89,11 +89,13 @@ export class FeedService {
                 if (change.type === 'modified') {
                     const data = change.doc.data()
                     data.id    = change.doc.id
-                    this.feeds[idx] = data
+                    this.feeds[idx]['feed'] = data
                 }
                 if (change.type === 'removed') {
                     this.feeds.splice(idx, 1)
                     this.feedsSnapshots.splice(idx, 1)
+                    delete this.commentsSnapshots[change.doc.id]
+                    console.log('feed removed - commentsSnapshots:', this.commentsSnapshots)
                     console.log('Last feedId:', this.lastFeed.id)
                 }
             })
@@ -135,6 +137,6 @@ export class FeedService {
     }
 
     private findFeedIndexByFeedId(feedId: string): number {
-        return this.feeds.findIndex(feed => feed.id === feedId)
+        return this.feeds.findIndex(feed => feed.feed.id === feedId)
     }
 }
