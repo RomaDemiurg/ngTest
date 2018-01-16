@@ -38,6 +38,8 @@
 
     <!-- <pre>{{ feedsIds | json }}</pre> -->
 
+    <!-- <pre>{{ feedService.commentsSnapshots | json }}</pre> -->
+    
     <button  (click)="feedService.getNextFeeds()">More Feeds...</button>
 
     <div *ngFor="let feed of feedService.feeds" >
