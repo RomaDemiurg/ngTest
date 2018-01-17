@@ -29,6 +29,7 @@ export class FeedService {
 
                 this.feedsSnapshots.push(feedSnap)
                 this.commentsSnapshots[feedSnap.id] = []
+                
                 this.endAt = feedSnap
                 if (i === 0) this.startAt = feedSnap
 
@@ -41,7 +42,6 @@ export class FeedService {
 
     getNextCommentsByFeedId(feedId: string) {
         this.commentsQuery(feedId).get().then(snap => {
-            console.log('getNextCommentsByFeedId() invoked - commentsSnapshots:', this.commentsSnapshots)
             if (snap.empty) {console.log('No More Comments'); return}
 
             snap.docs.forEach((comment, i) => {
@@ -51,8 +51,6 @@ export class FeedService {
                 this.feeds[idx]['comments'].push(data)
 
                 this.commentsSnapshots[feedId].push(comment)
-                console.log('commentsSnapshots:', this.commentsSnapshots)
-                console.log('lastCommentByFeedId:', this.lastCommentByFeedId(feedId))
 
                 this.commentEndAt = comment
                 if (i === 0) this.commentStartAt = comment
@@ -149,9 +147,9 @@ export class FeedService {
         const idx = this.findFeedIndexByFeedId(feedId)
 
         if (this.feeds[idx]['comments'].length === 0)
-            query.limit(this.limit)
+            query = query.limit(this.limit)
         else
-            query.startAfter(this.lastCommentByFeedId(feedId)).limit(this.limit)
+            query = query.startAfter(this.lastCommentByFeedId(feedId)).limit(this.limit)
 
         return query
     }
