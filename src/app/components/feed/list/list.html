@@ -1,27 +1,27 @@
-<!-- <div class="example-panel" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="1000" (scrolled)="getNextFeeds()"><br>
+<div class="example-panel" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="1000" (scrolled)="feedService.getNextFeeds()"><br>
 
     <app-feed-create></app-feed-create>
 
-    <div *ngFor="let feed of feeds">
+    <div *ngFor="let feed of feedService.feeds">
         <md-card>
             <md-card-header>
                 <div md-card-avatar class="example-header-image"></div>
-                <md-card-title>{{feed.author}}</md-card-title>
+                <md-card-title>{{feed.feed.author}}</md-card-title>
                 <md-card-subtitle>Dog Breed</md-card-subtitle>
             </md-card-header>
-            <img md-card-image src="../assets/{{feed.img}}" alt="Photo of a Shiba Inu">
+            <img md-card-image src="../assets/{{feed.feed.img}}" alt="Photo of a Shiba Inu">
             <md-card-content>
-                <p>{{feed.text}}</p>
+                <p>{{feed.feed.text}}</p>
             </md-card-content>
             <md-card-actions align="end">
-                <button md-icon-button (click)="updateLikes(feed.id)"><md-icon color="primary">favorite</md-icon></button><span class="actions">{{feed.likes}}</span>
+                <button md-icon-button (click)="feedService.updateLikes(feed.feed)"><md-icon color="primary">favorite</md-icon></button><span class="actions">{{feed.feed.likes}}</span>
                 <button md-icon-button><md-icon color="primary">share</md-icon></button><span class="actions">85</span>
 
                 <button md-icon-button color="primary" [mdMenuTriggerFor]="menu">
                     <md-icon>more_vert</md-icon>
                 </button>
                 <md-menu #menu="mdMenu" [overlapTrigger]="false">
-                    <button md-menu-item (click)="deleteFeed(feed.id)">
+                    <button md-menu-item (click)="feedService.deleteFeed(feed.feed.id)">
                         <md-icon>delete</md-icon>
                         <span>Delete feed</span>
                     </button>
@@ -29,26 +29,67 @@
             </md-card-actions>
         </md-card><br>
 
-        <app-comment [feedKey]="feed.id"></app-comment>
+        <!-- <app-comment [feedKey]="feed"></app-comment> -->
+        <md-expansion-panel>
+            <md-expansion-panel-header>
+                <md-panel-title>Comments (27)</md-panel-title>
+            </md-expansion-panel-header>
+        
+            <md-nav-list>
+                <md-list-item *ngFor="let comment of feed.comments">
+                    <img mdListAvatar src="../../../assets/{{comment.img}}" alt="Shiba_">
+                    <h3 mdLine>{{comment.author}}</h3>
+                    <p mdLine>{{comment.text}}</p>
+                </md-list-item>
+            </md-nav-list>
+        
+            <!-- <md-action-row>
+                <button md-button>Click me</button>
+            </md-action-row> -->
+            <!-- <app-comment-create [feedKey]="feedKey"></app-comment-create> -->
+
+            <div style="padding: 24px">
+                <button md-raised-button color="primary" style="width: 100%" (click)="feedService.getNextCommentsByFeedId(feed.feed.id)">MORE COMMENTS</button>
+            </div>
+            
+
+            <md-expansion-panel>
+                <md-expansion-panel-header>
+                    <md-panel-title>Create comment</md-panel-title>
+                </md-expansion-panel-header>
+            
+                <form style="padding: 0 24px">
+                    <md-form-field style="width: 100%"><input mdInput placeholder="Author" value="Roma" #author></md-form-field>
+                    <md-form-field style="width: 100%"><input mdInput placeholder="Image" value="06.jpg" #img></md-form-field>
+                    <md-form-field style="width: 100%"><input mdInput placeholder="Likes" value="0" #likes></md-form-field>
+                    <md-form-field style="width: 100%"><input mdInput placeholder="Text" value="Feed description goes here" #text></md-form-field>
+                </form>
+            
+                <md-action-row>
+                    <button md-raised-button (click)="createComment(feed.feed.id, author.value, img.value, likes.value, text.value)">ADD COMMENT</button>
+                </md-action-row>
+            </md-expansion-panel>
+                
+        </md-expansion-panel><br>
 
     </div>
-</div> -->
+</div>
 
-<div class="example-panel">
+<!-- <div class="example-panel"> -->
 
     <!-- <pre>{{ feedsIds | json }}</pre> -->
 
     <!-- <pre>{{ feedService.commentsSnapshots | json }}</pre> -->
-    
+<!--     
     <button  (click)="feedService.getNextFeeds()">More Feeds...</button>
 
     <div *ngFor="let feed of feedService.feeds" >
         <app-feed-detail [feed]="feed"></app-feed-detail>
-    </div>
-
+    </div> 
+-->
     <!-- <div *ngFor="let feed of feeds">
         {{ feed.likes }}
         <button md-icon-button (click)="updateLikes(feed.id)"><md-icon color="primary">favorite</md-icon></button>
         <button md-icon-button (click)="deleteFeed(feed.id)"><md-icon color="primary">delete</md-icon></button>
     </div> -->
-</div>
+<!-- </div> -->
